@@ -38,6 +38,34 @@ function createrRouter(history) {
 	};
 }
 
+function findAllAsyncBefore (renderProps) {
+
+  const getAsyncBefore = function (root) {
+    const next = root && root.props && root.props.children && getAsyncBefore(root.props.children)
+    const outp = []
+    if (next !== undefined) {
+      // Extend array
+      outp.push.apply(outp, next)
+    }
+    const currentFetchData = root && root.props && root.props.asyncBefore
+    if (currentFetchData) {
+      // Add current components fetchData if any
+      outp.push({
+        path: root.props.path,
+        params: root.props.params,
+        asyncBefore: currentFetchData
+      })
+    }
+    return outp
+  }
+
+  const arrFetchData = getAsyncBefore(renderProps.matched)
+  const promises = arrFetchData.map((item) => {
+    return item.asyncBefore(item.params)
+  })
+  return Promise.all(promises)
+}
+
 export default class Router extends Component<IRouterProps, any> {
 	public router: any;
 	public unlisten: any;
@@ -72,10 +100,22 @@ export default class Router extends Component<IRouterProps, any> {
 	}
 
 	public routeTo(url) {
-		this.setState(
-			{ url },
-			this.props.onUpdate ? () => this.props.onUpdate() : void 0
-		);
+		if (this.props.async) {
+			const hit = match(this.props.children, url);
+			// TODO: trigger event loading
+			findAllAsyncBefore(hit).then((results) => {
+				// TODO: trigger event finishedLoading
+				this.setState(
+					{ url },
+					this.props.onUpdate ? () => this.props.onUpdate() : void 0
+				);
+			})
+		} else {
+			this.setState(
+				{ url },
+				this.props.onUpdate ? () => this.props.onUpdate() : void 0
+			);
+		}
 	}
 
 	public render(props): VNode|null {
