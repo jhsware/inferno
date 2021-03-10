@@ -74,9 +74,17 @@
     "test:browser:compat": "cross-env InfernoCompat=1 npm run --prefix fixtures/browser local",
     "test:browser:nocompat": "cross-env InfernoCompat=0 npm run --prefix fixtures/browser local",
     "test:browser:debug": "cross-env InfernoCompat=1 npm run --prefix fixtures/browser debug",
+    "test:browser:debug-nocompat": "cross-env InfernoCompat=0 npm run --prefix fixtures/browser debug",
     "test:browser:sauce": "npm run --prefix fixtures/browser test",
     "test:react": "npm run --prefix fixtures/react test -- --forceExit",
-    "test:package": "node fixtures/packaging/build-all.js"
+    "test:package": "node fixtures/packaging/build-all.js",
+    "quick-test:browser": "npm run quick-build && npm run test:browser:nocompat",
+    "quick-test:browser:debug": "run-s build:s:** && npm run build:p:cjs:prod && npm run test:browser:debug-nocompat",
+    "quick-build": "run-s quick-build:*",
+    "quick-build:esm": "rm -f packages/inferno/dist/index.esm.js && esbuild packages/inferno/src/index.ts --bundle --jsx-factory=createElement --format=esm '--define:process.env.NODE_ENV=\"production\"' --target=chrome58,firefox57 --outfile=packages/inferno/dist/index.esm.js",
+    "quick-build:esm-dev": "rm -f packages/inferno/dist/index.dev.esm.js && esbuild packages/inferno/src/index.ts --bundle --jsx-factory=createElement --format=esm '--define:process.env.NODE_ENV=\"production\"' --target=chrome58,firefox57 --outfile=packages/inferno/dist/index.dev.esm.js",
+    "quick-build:pretty": "rm -f packages/inferno/dist/index.cjs.js && esbuild packages/inferno/src/index.ts --bundle --jsx-factory=createElement --format=cjs '--define:process.env.NODE_ENV=\"production\"' --target=chrome58,firefox57 --outfile=packages/inferno/dist/index.cjs.js",
+    "quick-build:min": "rm -f packages/inferno/dist/index.cjs.min.js && esbuild packages/inferno/src/index.ts --bundle --jsx-factory=createElement --minify --format=cjs '--define:process.env.NODE_ENV=\"production\"' --target=chrome58,firefox57 --outfile=packages/inferno/dist/index.cjs.min.js"
   },
   "devDependencies": {
     "@babel/core": "^7.12.16",
@@ -96,6 +104,7 @@
     "coveralls": "^3.1.0",
     "cross-env": "^7.0.3",
     "d3-scale-chromatic": "^2.0.0",
+    "esbuild": "^0.9.0",
     "filesize": "^6.1.0",
     "gzip-size": "^6.0.0",
     "history": "^4.10.1",
