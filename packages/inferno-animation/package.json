@@ -34,7 +34,10 @@
     "css"
   ],
   "dependencies": {
-    "inferno": "7.4.8"
+    "inferno": "7.4.8",
+    "inferno-shared": "7.4.8",
+    "inferno-create-element": "7.4.8"
+
   },
   "devDependencies": {
     "inferno-create-element": "7.4.8",
