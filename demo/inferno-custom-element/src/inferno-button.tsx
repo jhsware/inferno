@@ -1,10 +1,12 @@
-import { render } from 'inferno';
+import type { InfernoLibrary } from './registry';
 
-function Component({ children, ...props }) {
-  return (
-    <button {...props}>{children}</button>
-  )
+declare global {
+  interface Window {
+    __infernojs__: InfernoLibrary;
+  }
 }
+
+const { linkEvent, render } = global.__infernojs__.import('inferno@8');
 
 type TState = {
   disabled?: boolean;
@@ -25,7 +27,7 @@ customElements.define(
 
     connectedCallback() {
       // To allow SSR we need to do this when the component is connected to the DOM
-      const shadowRoot = this.attachShadow({ mode: "open" });
+      this.attachShadow({ mode: "open" });
       render(this.render(), this.shadowRoot);
     }
 
@@ -35,10 +37,6 @@ customElements.define(
 
     disconnectedCallback() {
       render(null, this.shadowRoot);
-    }
-
-    didClick = (e: MouseEvent) => {
-      console.log("Clicked!", e);
     }
 
     set disabled(bool) {
@@ -66,16 +64,18 @@ customElements.define(
       }
     }
 
+    didClick(root, e: MouseEvent) {
+      console.log("Clicked!", e);
+      e.stopPropagation();
+      // Resend this with custom element as root
+      root.dispatchEvent(new PointerEvent("click", e));
+    }
+
     render() {
       // TODO: Hydrate if SSR (how to check?)
-      // return (
-      //   <Component {...this._state} onClick={this.didClick}>
-      //     Click Me Now
-      //   </Component>
-      // )
       return (
-        <button {...this._state} onClick={this.didClick}>
-          Click Me Now
+        <button {...this._state} onClick={linkEvent(this, this.didClick)}>
+          <slot />
         </button>
       )
     }
