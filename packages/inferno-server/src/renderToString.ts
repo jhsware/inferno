@@ -7,6 +7,7 @@ import {
   isNullOrUndef,
   isNumber,
   isString,
+  isUndefined,
   throwError,
 } from 'inferno-shared';
 import { ChildFlags, VNodeFlags } from 'inferno-vnode-flags';
@@ -18,6 +19,15 @@ import {
   renderFunctionalComponent,
   voidElements,
 } from './utils';
+
+function renderCustomElementToString(CustomElement, props): string {
+  const el = new CustomElement();
+  for (const prop in props) {
+    el.attributeChangedCallback(prop, null, props[prop])
+  }
+  el.connectedCallback();
+  return `<template${el.shadowRoot ? ' shadowRoot="open"': ''}>${renderVNodeToString(el.render(), null, null)}</template>`
+}
 
 function renderVNodeToString(vNode, parent, context): string {
   const flags = vNode.flags;
@@ -172,8 +182,14 @@ function renderVNodeToString(vNode, parent, context): string {
       renderedString += `>`;
     } else {
       renderedString += `>`;
-      const childFlags = vNode.childFlags;
 
+      const childFlags = vNode.childFlags;
+      const CustomElement = global.customElements?.get(type);
+
+      if (!isUndefined(CustomElement)) {
+        renderedString += renderCustomElementToString(CustomElement, props);
+      }
+      
       if (childFlags === ChildFlags.HasVNodeChildren) {
         renderedString += renderVNodeToString(children, vNode, context);
       } else if (childFlags & ChildFlags.MultipleChildren) {
@@ -185,9 +201,8 @@ function renderVNodeToString(vNode, parent, context): string {
       } else if (html) {
         renderedString += html;
       }
-      if (!isVoidElement) {
-        renderedString += `</${type}>`;
-      }
+
+      renderedString += `</${type}>`;
     }
 
     if (String(type).match(/[\s\n/='"\0<>]/)) {

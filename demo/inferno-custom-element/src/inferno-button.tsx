@@ -4,9 +4,19 @@ declare global {
   interface Window {
     __infernojs__: InfernoLibrary;
   }
+  namespace JSX {
+    interface IntrinsicElements {
+      'inferno-button': any;
+    }
+  }
 }
 
+global ??= globalThis;
 const { linkEvent, render } = global.__infernojs__.import('inferno@8');
+
+// We don't want to execute the actual render function on the server
+// so we make it a noop
+const renderComponent = (typeof window === "undefined" ? () => null : render);
 
 type TState = {
   disabled?: boolean;
@@ -14,7 +24,7 @@ type TState = {
 type TAttributes = keyof TState;
 const ATTRIBUTES = ["disabled"] as const;
 
-customElements.define(
+global.customElements.define(
   "inferno-button",
   class extends HTMLElement {
     static observedAttributes = ATTRIBUTES;
@@ -26,9 +36,8 @@ customElements.define(
     }
 
     connectedCallback() {
-      // To allow SSR we need to do this when the component is connected to the DOM
       this.attachShadow({ mode: "open" });
-      render(this.render(), this.shadowRoot);
+      renderComponent(this.render(), this.shadowRoot);
     }
 
     adoptedCallback() {
@@ -36,22 +45,14 @@ customElements.define(
     }
 
     disconnectedCallback() {
-      render(null, this.shadowRoot);
-    }
-
-    set disabled(bool) {
-      this.setAttribute("disabled", bool.toString());
-    }
-
-    get disabled() {
-      return this.getAttribute("disabled") === "true";
+      renderComponent(null, this.shadowRoot);
     }
 
     attributeChangedCallback(attrName: TAttributes, oldVal: string | undefined, newVal: string | undefined) {
       if (oldVal === newVal) return;
       switch (attrName) {
         case "disabled": {
-          this._state[attrName] = newVal !== "false";
+          this._state[attrName] = newVal === "true";
           break;
         }
         default: {
@@ -60,7 +61,7 @@ customElements.define(
       }
 
       if (this.shadowRoot !== null) {
-        render(this.render(), this.shadowRoot);
+        renderComponent(this.render(), this.shadowRoot);
       }
     }
 
@@ -72,7 +73,6 @@ customElements.define(
     }
 
     render() {
-      // TODO: Hydrate if SSR (how to check?)
       return (
         <button {...this._state} onClick={linkEvent(this, this.didClick)}>
           <slot />

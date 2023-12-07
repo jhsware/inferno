@@ -7,7 +7,8 @@
   "source": "src/index.html",
   "browserslist": "> 0.5%, last 2 versions, not dead",
   "scripts": {
-    "dev": "cross-env FORCE_COLOR=1 parcel"
+    "dev": "cross-env FORCE_COLOR=1 parcel",
+    "dev-ssr": "ts-node-dev --respawn src/server.ts"
   },
   "dependencies": {
     "inferno": "file:../../packages/inferno",
