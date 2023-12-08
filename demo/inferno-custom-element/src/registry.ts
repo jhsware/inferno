@@ -19,8 +19,8 @@ elememnts.
 export class InfernoLibrary {
   _store = {};
 
-  register(moduleName, library) {
-    const majorVersion = library.version.split('.')[0];
+  register(moduleName, library, version = undefined) {
+    const majorVersion = version ?? library.version.split('.')[0];
 
     this._store[majorVersion] ??= {
       _v_: library._v_,
@@ -40,7 +40,7 @@ export class InfernoLibrary {
     if (!library) {
       throw new Error(`No ${moduleName}@${majorVersion} registered`);
     }
-    if (!greaterEqual(version, library.version)) {
+    if (library.version && !greaterEqual(version, library.version)) {
       console.warn(`Requested ${moduleName}@${version} is greater than available ${library._v_}`);
     }
     return library

@@ -1,5 +1,5 @@
 import './register';
 import { hydrate } from 'inferno-hydrate';
-import { App } from './App';
+import { App1 } from './App';
 
-hydrate(<App />, document.getElementById('app'))
+hydrate(<App1 />, document.getElementById('app1'))

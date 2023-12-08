@@ -70,7 +70,7 @@ function renderPage(html) {
     </section>
     <section>
       <h2>Custom Elment in App</h2>
-      <div id="app">${html}</div>
+      <div id="app1">${html}</div>
     </section>
   </body>
 </html>  

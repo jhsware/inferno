@@ -32,3 +32,4 @@ Some issues worth looking into:
 - can we use shadow DOM in ordinary components to make inspecting the DOM a more pleasant experience (this could actually be a very nice feature)?
 - make sure we support streaming
 - make sure we support animations
+- should we add version string to other libs or perform check in different way?

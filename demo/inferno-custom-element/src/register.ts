@@ -1,5 +1,6 @@
 import { InfernoLibrary } from './registry';
 import * as Inferno from 'inferno';
+import * as InfernoAnimation from 'inferno-animation';
 
 declare global {
   interface Window {
@@ -16,6 +17,7 @@ global ??= globalThis;
 if (typeof global !== 'undefined') {
   (global as any).__infernojs__ = new InfernoLibrary();
   global.__infernojs__.register('inferno', Inferno);
+  global.__infernojs__.register('inferno-animation', InfernoAnimation, '8');
 
   if (!global.customElements) {
     // https://github.com/jsdom/jsdom/tree/main/lib/jsdom/living/custom-elements
