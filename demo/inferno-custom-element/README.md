@@ -33,3 +33,14 @@ Some issues worth looking into:
 - make sure we support streaming
 - make sure we support animations
 - should we add version string to other libs or perform check in different way?
+
+Thoughts on animations: 
+Do we need something like `mountFunctionalComponent` and add animation support to the custom element class? This might be cleaner than wrapping custom elements in a functional component. However this won't work unless the custom element is mounted in an Inferno app.
+
+Perhaps a better solution is to find a way of jacking into the custom element lifecycle. But this might be a dead end since we don't have a virtual DOM.
+
+We might need to accept that custom elements can't be animated just like normal elements can't be animated.
+
+Note on flexbox: should inferno-animation handle parent gap dynamically in the same way we handle width and height?
+
+TODO: Create `mountCustomElement` and make it aware of animation hooks

@@ -14,7 +14,6 @@ declare global {
 
 global ??= globalThis;
 const { linkEvent, render } = global.__infernojs__.import('inferno@8');
-const { componentDidAppear, componentWillDisappear } = global.__infernojs__.import('inferno-animation@8');
 
 // We don't want to execute the actual render function on the server
 // so we make it a noop
@@ -29,6 +28,7 @@ ul {
   list-style: none;
   margin: 0;
   padding: 0.5rem;
+  overflow: hidden;
 }
 `
 
@@ -63,52 +63,6 @@ const cssListItem = `
   li {
     background-color: #fff;
     padding: 1rem 0.5rem;
-  }
-
-  /*******************************************/
-  /* Animate height and opacity of card <li> */
-  /*******************************************/
-  .ListItem-leave {
-      /* Leave animation start state */
-      opacity: 1;
-      transform: translateX(0);
-  }
-
-  .ListItem-leave-active {
-      /* Leave animation transitions */
-      overflow: visible;
-      transition: var(--infernoAnimationLeave);
-      pointer-events: none; /* prevent hover to fire transition events */
-  }
-
-  .ListItem-leave-end {
-      /* Leave animation end state */
-      opacity: 0;
-      height: 0;
-      padding-top: 0;
-      padding-bottom: 0;
-      border-width: 0;
-      transform: translateX(100%);
-  }
-
-  .ListItem-enter {
-      /* Enter animation start state */
-      opacity: 0.7;
-      height: 0;
-      padding-top: 0;
-      padding-bottom: 0;
-      border-width: 0;
-  }
-
-  .ListItem-enter-active {
-      /* Enter animation transitions */
-      transition: var(--infernoAnimationEnter);
-      pointer-events: none; /* prevent hover to fire transition events */
-  }
-
-  .ListItem-enter-end {
-      /* Enter animation end state */
-      opacity: 1;
   }
 `
 
@@ -164,10 +118,7 @@ global.customElements.define(
 
     render() {
       return (
-        <LI onClick={linkEvent(this, this.didClick)}
-          animation="ListItem"
-          onComponentDidAppear={componentDidAppear}
-          onComponentWillDisappear={componentWillDisappear}>
+        <LI onClick={linkEvent(this, this.didClick)}>
           <style>{cssListItem}</style>
           <slot />
         </LI>
