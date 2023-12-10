@@ -29,7 +29,6 @@ Benchmark with [Lit](https://github.com/lit/lit)
 Use case:
 - allow using inferno components in non-inferno apps (to create UI-component libraries)
 - provide a method of componentisation while reducing clutter in DOM-inspector
-- decrease clutter in DOM
 - improve robustness of component styling
 
 Main features:
