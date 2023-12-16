@@ -5,6 +5,7 @@ import {
   isNullOrUndef,
   isString,
   isStringOrNumber,
+  isUndefined,
   throwError,
 } from 'inferno-shared';
 import { ChildFlags, VNodeFlags } from 'inferno-vnode-flags';
@@ -252,7 +253,30 @@ export function mountElement(
   }
 
   if (!isNull(props)) {
-    mountProps(vNode, flags, props, dom, isSVG, animations);
+    if (vNode.type.includes('-')) {
+      const el = globalThis.customElements.get(vNode.type);
+      let _props;
+      let _attr = {};
+      if (!isUndefined(el) && isFunction((dom as any).setProps)) {
+        const elProps = (el as any).props;
+        for (const key in props) {
+          if (elProps.includes(key)) {
+            _props ??= {};
+            _props[key] = props[key];
+          } else {
+            _attr[key] = props[key];
+          }
+        }
+      } else {
+        _attr = props;
+      }
+      mountProps(vNode, flags, _attr, dom, isSVG, animations);
+      if (!isUndefined(_props)) {
+        (dom as any).setProps(_props);
+      }
+    } else {
+      mountProps(vNode, flags, props, dom, isSVG, animations);
+    }
   }
 
   if (process.env.NODE_ENV !== 'production') {

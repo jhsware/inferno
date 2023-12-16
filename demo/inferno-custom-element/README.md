@@ -24,7 +24,10 @@ npm run dev-ssr
 
 ## Developer Notes
 
-Benchmark with [Lit](https://github.com/lit/lit)
+Benchmark with:
+- [Lit](https://github.com/lit/lit)
+- [Lightning Web Components](https://developer.salesforce.com/docs/platform/lwc/guide/create-components-introduction.html)
+- [Light DOM](https://developer.salesforce.com/docs/platform/lwc/guide/create-light-dom.html)
 
 Use case:
 - allow using inferno components in non-inferno apps (to create UI-component libraries)
@@ -34,11 +37,16 @@ Use case:
 Main features:
 - we need a library registry so custom elements can:
   - be provided as individual components yet share the same core libs
-  - follow different release cycles where they depend on different major versions of Inferno
+  - mix custom elements on a page even if they depend on different major versions of Inferno
 - custom elements need to be first class citizens in an Inferno app, supporting:
   - orchestrating animations
   - custom callbacks
-  - (maybe) passing rich data
+  - passing rich data
+    - this requires standardised setters for rich props
+  - don't pass context to custom element because it will tightly couple implementation to application, better to use Component for that use case
+  - custom element support is mainly implemented as a pattern
+    - some library support is provided
+    - this allows greater flexibility in implementation of hooks etc.
 
 Some issues worth looking into:
 
@@ -67,6 +75,10 @@ TODO: Create `mountCustomElement` and make it aware of animation hooks
 - benefit: we could probably bake the animation hooks into the custom element root class (but this would require runtime check for animation hooks on every instance of a custom element)
 - drawback: adds code to core library
 - note: we probably want to do the check for custom-elements and animation hooks during JSX-transformation to avoid performance penalty
+
+<my-element onComponentWillDisappear={} onComponentDidAppear={} onComponentWillMove={}></my-element>
+
+<MyElement onComponentWillDisappear={} onComponentDidAppear={} onComponentWillMove={}></MyElement>
 
 Experiment 2: animate all elements
 TODO: Allow all elements to be aware of animation hooks, meaning we could animate any dom element as we please

@@ -2,6 +2,7 @@ import { Component, linkEvent } from 'inferno';
 import { componentDidAppear, componentWillDisappear } from 'inferno-animation';
 import './inferno-button';
 import './inferno-list';
+import './inferno-rich';
 
 function didClick(e) {
   console.log('Clicked in app!', e);
@@ -143,3 +144,37 @@ export class App2 extends Component<any, { list: any[] }> {
 function AnimWrapper({ children, ...props }) {
   return <div className="ListItem">{children}</div>
 }
+
+export class App3 extends Component<any, { data: { title: string, preamble: string } }> {
+
+  constructor(props) {
+    super(props);
+    this.state = {
+      data: {
+        title: "Hello World!",
+        preamble: "This is a test of the Inferno Rich component."
+      }
+    };
+  }
+
+  doChange(self, e) {
+    e.preventDefault();
+    self.setState({
+      data: {
+        title: "Good Bye World!",
+        preamble: "Test Complete."
+      }
+    });
+  }
+  
+  render() {
+    return (
+      <div>
+        <style>{app2Css}</style>
+        <inferno-button onClick={linkEvent(this, this.doChange)}>Change</inferno-button>
+        <inferno-rich data={this.state.data}>The body is here...</inferno-rich>
+      </div>
+    );
+  }
+}
+
