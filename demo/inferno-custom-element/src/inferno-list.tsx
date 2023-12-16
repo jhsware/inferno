@@ -69,8 +69,9 @@ const cssListItem = `
 type TState = {
   index?: number;
 }
-type TAttributes = keyof TState;
 const ATTRIBUTES = ["index"] as const;
+type TAttributes = typeof ATTRIBUTES[number];
+// type TValues =  TState[typeof ATTRIBUTES[number]];
 
 global.customElements.define(
   "inferno-list-item",
@@ -83,13 +84,12 @@ global.customElements.define(
       this._state = {};
     }
 
-    attributeChangedCallback(attrName: TAttributes, oldVal: number | undefined, newVal: number | undefined) {
+    attributeChangedCallback(attrName: TAttributes, oldVal: string | null | undefined, newVal: string | null | undefined) {
       if (oldVal === newVal) return;
       switch (attrName) {
-        case "index": {
-          this._state[attrName] = newVal as number | undefined;
+        case "index":
+          this._state[attrName] = newVal != undefined ? parseInt(newVal) : undefined;
           break;
-        }
       }
       
       if (this.shadowRoot !== null) {

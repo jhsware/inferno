@@ -21,8 +21,9 @@ const renderComponent = (typeof window === "undefined" ? () => null : render);
 type TState = {
   disabled?: boolean;
 }
-type TAttributes = keyof TState;
 const ATTRIBUTES = ["disabled"] as const;
+type TAttributes = typeof ATTRIBUTES[number];
+// type TValues =  TState[typeof ATTRIBUTES[number]];
 
 global.customElements.define(
   "inferno-button",
@@ -48,7 +49,7 @@ global.customElements.define(
       renderComponent(null, this.shadowRoot);
     }
 
-    attributeChangedCallback(attrName: TAttributes, oldVal: string | undefined, newVal: string | undefined) {
+    attributeChangedCallback(attrName: TAttributes, oldVal: string | null | undefined, newVal: string | null | undefined) {
       if (oldVal === newVal) return;
       switch (attrName) {
         case "disabled": {
