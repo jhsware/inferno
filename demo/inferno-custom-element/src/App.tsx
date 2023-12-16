@@ -25,10 +25,25 @@ export function App1() {
 
 const app2Css = `
 html {
-  --infernoAnimationEnter: all 1.2s ease-out;
-  --infernoAnimationLeave: all .6s ease-out;
+  /* CSS-vars passes through to shadow DOM */
+  --infernoAnimationEnter: all .4s ease-out;
+  --infernoAnimationLeave: all .3s ease-out;
+  /* REM passes through to shadow DOM */
+  font-size: 1.2em;
 }
 
+/* Style directly on custom element using inherited styling rules */
+inferno-list-item {
+  font-family: serif;
+}
+
+/* Style directly on custom element using class */
+.ListItemElement {
+  color: green;
+}
+
+
+/* TODO: I would like to do this directly on the custom element */
 /*******************************************/
 /* Animate height and opacity of card <li> */
 /*******************************************/
@@ -77,12 +92,16 @@ html {
 }
 `
 export class App2 extends Component<any, { list: any[] }> {
-  counter = 0;
+  counter = 3;
 
   constructor(props) {
     super(props);
     this.state = {
-      list: [],
+      list: [
+        { id: 0, text: `Item 0` },
+        { id: 1, text: `Item 1` },
+        { id: 2, text: `Item 2` }
+      ],
     };
   }
 
@@ -113,7 +132,7 @@ export class App2 extends Component<any, { list: any[] }> {
             animation="ListItem"
             onComponentDidAppear={componentDidAppear}
             onComponentWillDisappear={componentWillDisappear}>
-            <inferno-list-item index={v.id} onRemove={linkEvent(this, this.doRemove)}>This is index {v.text}</inferno-list-item>
+            <inferno-list-item class="ListItemElement" index={v.id} onRemove={linkEvent(this, this.doRemove)}><p>This is index {v.text}</p></inferno-list-item>
           </AnimWrapper>;
         })}</inferno-list>
       </div>
@@ -122,5 +141,5 @@ export class App2 extends Component<any, { list: any[] }> {
 }
 
 function AnimWrapper({ children, ...props }) {
-  return <div>{children}</div>
+  return <div className="ListItem">{children}</div>
 }
