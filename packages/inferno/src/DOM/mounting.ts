@@ -254,6 +254,7 @@ export function mountElement(
 
   if (!isNull(props)) {
     if (vNode.type.includes('-')) {
+      // This is a custom element
       const el = globalThis.customElements.get(vNode.type);
       let _props;
       let _attr = {};
