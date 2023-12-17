@@ -20,6 +20,7 @@ if (typeof global !== 'undefined') {
   global.__infernojs__.register('inferno-animation', InfernoAnimation, '8');
 
   if (!global.customElements) {
+    // Mock for SSR in Nodejs
     // https://github.com/jsdom/jsdom/tree/main/lib/jsdom/living/custom-elements
 
     global.customElements = {
