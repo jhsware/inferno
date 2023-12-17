@@ -53,7 +53,7 @@ global.customElements.define(
       if (oldVal === newVal) return;
       switch (attrName) {
         case "disabled": {
-          this._state[attrName] = newVal === "true";
+          this._state[attrName] = newVal !== "false" && newVal != undefined;
           break;
         }
         default: {
