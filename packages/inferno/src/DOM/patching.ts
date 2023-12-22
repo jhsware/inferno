@@ -1,5 +1,5 @@
 import type { ContextObject, VNode } from '../core/types';
-import { isFunction, isInvalid, isNull, isNullOrUndef, isUndefined } from 'inferno-shared';
+import { isFunction, isInvalid, isNull, isNullOrUndef } from 'inferno-shared';
 import { ChildFlags, VNodeFlags } from 'inferno-vnode-flags';
 import {
   createVoidVNode,
@@ -39,6 +39,7 @@ import {
 } from './utils/componentUtil';
 import { validateKeys } from '../core/validate';
 import { mountRef, unmountRef } from '../core/refs';
+import { splitProps } from './utils/common';
 
 function replaceWithNewNode(
   lastVNode,
@@ -67,29 +68,6 @@ function replaceWithNewNode(
     );
     removeVNodeDOM(lastVNode, parentDOM, animations);
   }
-}
-
-function splitProps(props: any, customElement /* InfernoCustomElement */, dom /* InfernoCustomElement */): [Record<string, any>, Record<string, any>] {
-  if (isUndefined(customElement)) {
-    return [props, EMPTY_OBJ];
-  }
-
-  let _props;
-  let _attr;
-  if (isFunction(dom.setProps)) {
-    const elProps = (customElement as any).props;
-    for (const key in props) {
-      if (elProps.includes(key)) {
-        _props ??= {};
-        _props[key] = props[key];
-      } else {
-        _attr ??= {};
-        _attr[key] = props[key];
-      }
-    }
-  }
-  
-  return [_attr ?? EMPTY_OBJ, _props ?? EMPTY_OBJ];
 }
 
 export function patch(
@@ -310,18 +288,21 @@ export function patchElement(
 
   // inlined patchProps  -- starts --
   if (lastProps !== nextProps) {
-    const customElement /* InfernoCustomElement */ = nextVNode.type.includes('-') ? globalThis.customElements.get(nextVNode.type) : undefined;
-    const [_lastProps, _lastCustomElementProps] = splitProps(lastProps, customElement, dom);
-    const [_nextProps, _nextCustomElementProps] = splitProps(nextProps, customElement, dom);
-  
-    if (_lastCustomElementProps !== EMPTY_OBJ && _nextCustomElementProps !== EMPTY_OBJ) {
-      const _attr = _nextCustomElementProps;
-      for (const key in (customElement! as any /* InfernoCustomElement */).props) {
-        if (!_attr.hasOwnProperty(key)) {
-          _attr[key] = undefined;
-        }
+    let _lastProps = lastProps;
+    let _nextProps = nextProps;
+    let _nextCustomElementProps = EMPTY_OBJ;
+    if (nextVNode.type.includes('-')) {
+      const customElement /* InfernoCustomElement */ = globalThis.customElements.get(nextVNode.type);
+      if (customElement) {
+        [_lastProps, _nextProps, _nextCustomElementProps] = splitProps(lastProps, nextProps, customElement);
       }
-      (dom as any /* InfernoCustomElement */).setProps(_attr);
+    }
+
+    if (_nextCustomElementProps !== EMPTY_OBJ) {
+      // NOTE: It is up to the custom element to trigger the re-render
+      for (const key in _nextCustomElementProps) {
+        dom[key] = _nextCustomElementProps[key];
+      }
     }
 
     const lastPropsOrEmpty = _lastProps || EMPTY_OBJ;
