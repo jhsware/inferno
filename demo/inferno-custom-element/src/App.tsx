@@ -31,11 +31,12 @@ html {
   --infernoAnimationLeave: all .3s ease-out;
   /* REM passes through to shadow DOM */
   font-size: 1.2em;
+  font-weight: bold;
 }
 
 /* Style directly on custom element using inherited styling rules */
 inferno-list-item {
-  font-family: serif;
+  font-family: sans-serif;
 }
 
 /* Style directly on custom element using class */
@@ -133,7 +134,7 @@ export class App2 extends Component<any, { list: any[] }> {
             animation="ListItem"
             onComponentDidAppear={componentDidAppear}
             onComponentWillDisappear={componentWillDisappear}>
-            <inferno-list-item class="ListItemElement" index={v.id} onRemove={linkEvent(this, this.doRemove)}><p>This is index {v.text}</p></inferno-list-item>
+            <inferno-list-item class="ListItemElement" index={v.id} onRemove={linkEvent(this, this.doRemove)}><span>index {v.text}</span></inferno-list-item>
           </AnimWrapper>;
         })}</inferno-list>
       </div>

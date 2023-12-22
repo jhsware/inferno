@@ -120,6 +120,7 @@ global.customElements.define(
       return (
         <LI onClick={linkEvent(this, this.didClick)}>
           <style>{cssListItem}</style>
+          This is:{" "}
           <slot />
         </LI>
       )
