@@ -265,7 +265,9 @@ export function mountElement(
           dom[key] = _customElementProps[key];
         }
       }
-    } 
+    }
+    // QUESTION: Could we provide a shortcut so the custom element doesn't have to perform
+    // a render() from root, but instead just continue in this mount
     mountProps(vNode, flags, _props, dom, isSVG, animations);
   }
 

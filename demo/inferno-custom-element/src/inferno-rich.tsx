@@ -1,22 +1,12 @@
-import type { InfernoLibrary } from './registry';
+import { setData, scheduleRender, renderComponent } from './utils';
 
 declare global {
-  interface Window {
-    __infernojs__: InfernoLibrary;
-  }
   namespace JSX {
     interface IntrinsicElements {
       'inferno-rich': any;
     }
   }
 }
-
-global ??= globalThis;
-const { linkEvent, render } = global.__infernojs__.import('inferno@8');
-
-// We don't want to execute the actual render function on the server
-// so we make it a noop
-const renderComponent = (typeof window === "undefined" ? () => null : render);
 
 const ATTRIBUTES = [] as const;
 type TAttributes = typeof ATTRIBUTES[number];
@@ -50,10 +40,8 @@ global.customElements.define(
     }
 
     set data(value) {
-      this._data = value;
-      if (this.shadowRoot !== null) {
-        renderComponent(this.render(), this.shadowRoot);
-      }
+      setData(this, "data", value)
+      && scheduleRender(this);
     }
 
     get data() {
@@ -61,7 +49,7 @@ global.customElements.define(
     }
 
     render() {
-      const { title, preamble } = this._data ?? {};
+      const { title, preamble } = this.data ?? {};
       return (
         <section>
           {title && <h2>{title}</h2>}
@@ -72,3 +60,5 @@ global.customElements.define(
     }
   }
 );
+
+

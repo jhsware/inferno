@@ -1,9 +1,7 @@
-import type { InfernoLibrary } from './registry';
+import { setData, scheduleRender, renderComponent } from './utils';
 
 declare global {
-  interface Window {
-    __infernojs__: InfernoLibrary;
-  }
+
   namespace JSX {
     interface IntrinsicElements {
       'inferno-list': any;
@@ -13,11 +11,7 @@ declare global {
 }
 
 global ??= globalThis;
-const { linkEvent, render } = global.__infernojs__.import('inferno@8');
-
-// We don't want to execute the actual render function on the server
-// so we make it a noop
-const renderComponent = (typeof window === "undefined" ? () => null : render);
+const { linkEvent } = global.__infernojs__.import('inferno@8');
 
 const cssList = `
 ul {
@@ -91,10 +85,7 @@ global.customElements.define(
           this._state[attrName] = newVal != undefined ? parseInt(newVal) : undefined;
           break;
       }
-      
-      if (this.shadowRoot !== null) {
-        renderComponent(this.render(), this.shadowRoot);
-      }
+      scheduleRender(this);
     }
 
     connectedCallback() {

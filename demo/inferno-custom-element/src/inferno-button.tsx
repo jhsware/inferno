@@ -1,9 +1,6 @@
-import type { InfernoLibrary } from './registry';
+import { scheduleRender, renderComponent } from './utils';
 
 declare global {
-  interface Window {
-    __infernojs__: InfernoLibrary;
-  }
   namespace JSX {
     interface IntrinsicElements {
       'inferno-button': any;
@@ -12,11 +9,7 @@ declare global {
 }
 
 global ??= globalThis;
-const { linkEvent, render } = global.__infernojs__.import('inferno@8');
-
-// We don't want to execute the actual render function on the server
-// so we make it a noop
-const renderComponent = (typeof window === "undefined" ? () => null : render);
+const { linkEvent } = global.__infernojs__.import('inferno@8');
 
 type TState = {
   disabled?: boolean;
@@ -61,9 +54,7 @@ global.customElements.define(
         }
       }
 
-      if (this.shadowRoot !== null) {
-        renderComponent(this.render(), this.shadowRoot);
-      }
+      scheduleRender(this);
     }
 
     didClick(root, e: MouseEvent) {

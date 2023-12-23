@@ -44,6 +44,14 @@ inferno-list-item {
   color: green;
 }
 
+.col-wrapper {
+  display: flex;
+  flex-direction: row;
+}
+
+.col {
+  width: 50%;
+}
 
 /* TODO: I would like to do this directly on the custom element */
 /*******************************************/
@@ -125,7 +133,7 @@ export class App2 extends Component<any, { list: any[] }> {
 
   render() {
     return (
-      <div>
+      <BlockAnimOnFirstAppear>
         <style>{app2Css}</style>
         <inferno-button onClick={linkEvent(this, this.doAdd)}>Add!</inferno-button>
         <inferno-list>{this.state.list.map((v) => {
@@ -137,9 +145,17 @@ export class App2 extends Component<any, { list: any[] }> {
             <inferno-list-item class="ListItemElement" index={v.id} onRemove={linkEvent(this, this.doRemove)}><span>index {v.text}</span></inferno-list-item>
           </AnimWrapper>;
         })}</inferno-list>
-      </div>
+      </BlockAnimOnFirstAppear>
     );
   }
+}
+
+function _innerBlock({ children, ...props }) {
+  return <div {...props}>{children}</div>
+}
+
+function BlockAnimOnFirstAppear({ children, ...props }) {
+  return <_innerBlock {...props} onComponentDidAppear={(_dom, _props) => {}} onComponentWillDisappear={(_dom, _props, cb: any) => cb()}>{children}</_innerBlock>
 }
 
 function AnimWrapper({ children, ...props }) {
@@ -148,32 +164,62 @@ function AnimWrapper({ children, ...props }) {
 
 export class App3 extends Component<any, { data: { title: string, preamble: string } }> {
 
-  constructor(props) {
-    super(props);
-    this.state = {
-      data: {
-        title: "Hello World!",
-        preamble: "This is a test of the Inferno Rich component."
-      }
-    };
-  }
+  // Do test performance, change this to 10k
+  iterator = new Array(100).fill(0).map((v, i) => i);
+
+  state = {
+    data: {
+      title: "Hello World!",
+      preamble: "This is a test of the Inferno Rich component."
+    },
+    altData: {
+      title: "Good Bye World!",
+      preamble: "Test Complete."
+    },
+    dataRight: {
+      title: "Hello Right!",
+      preamble: "This is a test of the Inferno Rich component."
+    },
+    altDataRight: {
+      title: "Good Bye Right!",
+      preamble: "Test Complete."
+    }
+  };
 
   doChange(self, e) {
     e.preventDefault();
     self.setState({
-      data: {
-        title: "Good Bye World!",
-        preamble: "Test Complete."
-      }
+      data: self.state.altData,
+      altData: self.state.data
+    });
+  }
+
+  doChangeRight(self, e) {
+    e.preventDefault();
+    self.setState({
+      dataRight: self.state.altDataRight,
+      altDataRight: self.state.dataRight
     });
   }
   
   render() {
     return (
-      <div>
+      <div className="col-wrapper">
         <style>{app2Css}</style>
-        <inferno-button onClick={linkEvent(this, this.doChange)}>Change</inferno-button>
-        <inferno-rich data={this.state.data}>The body is here...</inferno-rich>
+        <div className="col">
+          <h2>Autonomous Custom Elements</h2>
+          <inferno-button onClick={linkEvent(this, this.doChange)}>Change</inferno-button>
+          {this.iterator.map((v) => <inferno-rich data={this.state.data}>The body is here...</inferno-rich>)}
+        </div>
+        <div className="col">
+          <h2>DOM Elements</h2>
+          <inferno-button onClick={linkEvent(this, this.doChangeRight)}>Change</inferno-button>
+          {this.iterator.map((v) => <section>
+            {this.state.dataRight.title && <h2>{this.state.dataRight.title}</h2>}
+            {this.state.dataRight.preamble && <p>{this.state.dataRight.preamble}</p>}
+            The body is here...
+          </section>)}
+        </div>
       </div>
     );
   }
