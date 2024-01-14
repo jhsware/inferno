@@ -1,0 +1,41 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8"/>
+    <title>Inferno Router Demo</title>
+    <script type="module" src="index.tsx"></script>
+  </head>
+  <body>
+    <template id="styling-1">
+      <style>
+        :host {
+          display: block;
+          padding: 10px;
+          border: 1px solid black;
+          background-color: #eee;
+        }
+        :host([disabled]) {
+          background-color: #ccc;
+        }
+      </style>
+    </template>
+    <section>
+      <styling-1></styling-1>
+      <h2>Custom Elment in HTML</h2>
+      <inferno-button disabled>DISABLED</inferno-button>
+      <inferno-button>Click me!</inferno-button>
+    </section>
+    <section>
+      <h2>Custom Elment in App</h2>
+      <div id="app1"></div>
+    </section>
+    <section>
+      <h2>Custom Elment with Animations</h2>
+      <div id="app2"></div>
+    </section>
+    <section>
+      <h2>Custom Elment with Rich Data</h2>
+      <div id="app3"></div>
+    </section>
+  </body>
+</html>
