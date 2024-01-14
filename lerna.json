@@ -7,7 +7,7 @@
       "npmClientArgs": ["--no-package-lock"]
     }
   },
-  "packages": ["packages/*"],
+  "packages": ["packages/*", "external/*"],
   "ignoreChanges": ["docs/**", "packages/*/package-lock.json"],
   "version": "8.2.2"
 }
