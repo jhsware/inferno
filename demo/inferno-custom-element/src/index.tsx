@@ -1,4 +1,4 @@
-import './register';
+import 'inferno-custom-elements';
 import { render } from 'inferno';
 import { App1, App2, App3 } from './App';
 

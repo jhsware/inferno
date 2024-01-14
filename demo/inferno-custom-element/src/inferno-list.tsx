@@ -1,4 +1,4 @@
-import { setData, scheduleRender, renderComponent } from './utils';
+import { setData, scheduleRender, renderComponent } from 'inferno-custom-elements';
 
 declare global {
 

@@ -1,3 +1,12 @@
+import * as Inferno from 'inferno';
+
+declare global {
+  interface Window {
+    __infernojs__: InfernoLibraryRegistry;
+  }
+}
+
+
 function greaterEqual(_v1, _v2) {
   const v1 = _v1.split('.');
   const v2 = _v2.split('.');
@@ -16,7 +25,7 @@ way we make sure that evrything is run in sync. By allowing multiple major versi
 issues with breaking changes when older custom elements are mixed with newer apps and custom
 elememnts.
 */
-export class InfernoLibrary {
+class InfernoLibraryRegistry {
   _store = {};
 
   register(moduleName, library, version = undefined) {
@@ -45,4 +54,21 @@ export class InfernoLibrary {
     }
     return library
   }
+}
+
+
+/**
+ * We always need to import Inferno, so we register it here. To import use:
+ * 
+ *   register: global.__infernojs__.register('inferno', Inferno);
+ *   import:   const { render } = global.__infernojs__.import('inferno@8');
+ * 
+ * Use these imports in custom elements and register the libraries in your
+ * main app using the version of Inferno you are using.
+ */
+
+global ??= globalThis;
+if (typeof global !== 'undefined') {
+  (global as any).__infernojs__ = new InfernoLibraryRegistry();
+  global.__infernojs__.register('inferno', Inferno);
 }

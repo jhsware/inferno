@@ -1,4 +1,4 @@
-import { scheduleRender, renderComponent } from './utils';
+import { scheduleRender, renderComponent } from 'inferno-custom-elements';
 
 declare global {
   namespace JSX {

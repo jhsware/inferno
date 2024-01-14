@@ -1,24 +1,18 @@
-import { InfernoLibrary } from './registry';
-import * as Inferno from 'inferno';
-import * as InfernoAnimation from 'inferno-animation';
+import 'inferno';
 
 declare global {
   interface Window {
-    __infernojs__: InfernoLibrary;
     readonly customElements: CustomElementRegistry;
     HTMLElement: typeof HTMLElement;
   }
 }
 
+type TShadowRootMode = 'open' | 'closed';
+
 const _mockGlobalRegistry = {};
 
 global ??= globalThis;
-
 if (typeof global !== 'undefined') {
-  (global as any).__infernojs__ = new InfernoLibrary();
-  global.__infernojs__.register('inferno', Inferno);
-  global.__infernojs__.register('inferno-animation', InfernoAnimation, '8');
-
   if (!global.customElements) {
     // Mock for SSR in Nodejs
     // https://github.com/jsdom/jsdom/tree/main/lib/jsdom/living/custom-elements
@@ -29,12 +23,12 @@ if (typeof global !== 'undefined') {
       },
       get: (name: string): CustomElementConstructor | undefined => { return _mockGlobalRegistry[name]; },
       upgrade: () => { /* not needed for SSR I believe */ },
-      whenDefined: async (name: string): Promise<CustomElementConstructor> => { return  /* not needed for SSR I believe */; },
+      whenDefined: async (_name: string): Promise<CustomElementConstructor> => { return undefined as any /* not needed for SSR I believe */; },
     };
   }
 
   if (!global.HTMLElement) {
-    type TShadowRootMode = 'open' | 'closed';
+    // Mock for SSR in Nodejs  
     class MockHTMLElement {
       _shadowRootMode: TShadowRootMode = 'open';
       constructor() {
@@ -47,7 +41,6 @@ if (typeof global !== 'undefined') {
         return this._shadowRootMode === 'open' ? {} : null;
       }
     }
-
     global.HTMLElement = MockHTMLElement as any;
   }
 }

@@ -2,6 +2,9 @@ import { createVNode, Component } from "inferno";
 import { VNodeFlags } from "inferno-vnode-flags";
 import { splitProps } from "./splitProps";
 import { EMPTY_OBJ } from "inferno";
+export * from './nodejsHelper';
+export * from './registry';
+export * from './utils';
 
 
 export class CustomElementWrapper extends Component {

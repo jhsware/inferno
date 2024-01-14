@@ -5,7 +5,15 @@ import * as koaStatic from 'koa-static';
 import * as koaMount from 'koa-mount';
 import { renderToString } from 'inferno-server';
 import {Parcel} from '@parcel/core';
-import './register';
+import * as InfernoAnimation from 'inferno-animation';
+import 'inferno-custom-elements';
+
+global ??= globalThis;
+if (typeof global !== 'undefined') {
+  // Adding additional libraries for custom elements:
+  global.__infernojs__.register('inferno-animation', InfernoAnimation, '8');
+}
+
 
 const PORT = process.env.PORT || 3000;
 
