@@ -48,6 +48,7 @@
     "inferno-create-element": "inferno-create-element/dist/index.dev.mjs",
     "inferno-hydrate": "inferno-hydrate/dist/index.dev.mjs",
     "inferno-router": "inferno-router/dist/index.dev.mjs",
-    "inferno-server": "inferno-server/dist/index.dev.mjs"
+    "inferno-server": "inferno-server/dist/index.dev.mjs",
+    "inferno-custom-element": "inferno-custom-element/dist/index.dev.mjs"
   }
 }

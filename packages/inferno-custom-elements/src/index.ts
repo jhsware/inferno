@@ -1,5 +1,5 @@
-import { createVNode, Component } from "inferno";
-import { VNodeFlags } from "inferno-vnode-flags";
+import { createVNode, Component, createRef, RefObject } from "inferno";
+import { ChildFlags, VNodeFlags } from "inferno-vnode-flags";
 import { splitProps } from "./splitProps";
 import { EMPTY_OBJ } from "inferno";
 export * from './nodejsHelper';
@@ -8,33 +8,47 @@ export * from './utils';
 
 
 export class CustomElementWrapper extends Component {
-  _elType /* CustomElement */;
-  _ref;
-  _state;
-  _lastRichProps;
+  _elType /* CustomElement */: CustomElementConstructor | undefined;
+  _$EL: string;
+  _ref: RefObject<Element>;
+  _state: [Record<string, any>, Record<string, any>];
+  _lastRichProps: Record<string, any>;
 
   constructor(props) {
     super(props);
-    this._elType = globalThis.customElements.get(props.$EL);
-    this._state = splitProps(EMPTY_OBJ, props, this._elType);
+    const { $EL, ...restProps } = props;
+    this._$EL = $EL;
+    this._elType = globalThis.customElements.get($EL);
+    this._state = splitProps(EMPTY_OBJ, restProps, this._elType);
+    this._ref = createRef();
   }
 
-  componentWillReceiveProps(_nextProps) {
+  public componentWillReceiveProps(_nextProps) {
     this._lastRichProps = this._state[1] ?? EMPTY_OBJ;
-    this._state = splitProps(this.props, _nextProps, this._elType);
+    const { $EL, ...props } = _nextProps;
+    this._state = splitProps(this.props, props, this._elType);
+  }
+
+  public componentDidMount(): void {
+    const [_nextProps, richProps] = this._state;
+    this.setRichProps(richProps);
+  }
+
+  private setRichProps(props) {
+    if (this._ref.current) {
+      for (const key in props) {
+        if (this._lastRichProps?.[key] !== props[key]) {
+          this._ref.current[key] = props[key];
+        }
+      }
+    }
   }
 
   render(props) {
     const [nextProps, richProps] = this._state;
     const { className, children, ...restProps } = nextProps;
-    if (this._ref.el) {
-      for (const key in richProps) {
-        if (this._lastRichProps[key] !== richProps[key]) {
-          this._ref.el[key] = richProps[key];
-        }
-      }
-    }
-    const childFlags = undefined;
-    return createVNode(VNodeFlags.Element, props.$EL, className, children, childFlags, restProps, null, this._ref);
+    this.setRichProps(richProps);
+    console.log(nextProps);
+    return createVNode(VNodeFlags.HtmlElement, props.$EL, className, children, ChildFlags.UnknownChildren, restProps, null, this._ref as any);
   }
 }

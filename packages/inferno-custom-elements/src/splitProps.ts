@@ -13,19 +13,20 @@ export function splitProps(lastProps: any, nextProps: any, customElement /* Infe
   }
 
   let _lastProps, _nextProps;
-  let _nextCustomElementProps;
+  let _richProps;
 
-  const observedAttrs = (customElement as any).observedAttributes;
+  const observedAttrs = (customElement as any).observedAttributes ?? [];
+  const componentProps = [...observedAttrs, 'children', 'key', 'className', 'style'];
   // Should these be cached on vNode?
   if (!isUndefined(nextProps)) {
     for (const key in nextProps) {
       // Attributes and callbacks should be passed as inferno props
-      if (observedAttrs.includes(key) || isFunctionOrLinkEventObject(nextProps[key])) {
+      if (componentProps.includes(key) || isFunctionOrLinkEventObject(nextProps[key])) {
         _nextProps ??= {};
         _nextProps[key] = nextProps[key];
       } else {
-        _nextCustomElementProps ??= {};
-        _nextCustomElementProps[key] = nextProps[key];
+        _richProps ??= {};
+        _richProps[key] = nextProps[key];
       }
     }
   }
@@ -33,7 +34,7 @@ export function splitProps(lastProps: any, nextProps: any, customElement /* Infe
   if (!isUndefined(lastProps)) {
     for (const key in lastProps) {
       // Attributes and callbacks should be passed as inferno props
-      if (observedAttrs.includes(key) || isFunctionOrLinkEventObject(lastProps[key])) {
+      if (componentProps.includes(key) || isFunctionOrLinkEventObject(lastProps[key])) {
         // Clear the value by setting it to undefined, otherwise it won't be sent to the custom element
         _nextProps ??= {};
         if (!_nextProps.hasOwnProperty(key)) {
@@ -43,13 +44,13 @@ export function splitProps(lastProps: any, nextProps: any, customElement /* Infe
         _lastProps[key] = lastProps[key];
       } else {
         // Clear the value by setting it to undefined, otherwise it won't be sent to the custom element
-        _nextCustomElementProps ??= {};
-        if (!_nextCustomElementProps.hasOwnProperty(key)) {
-          _nextCustomElementProps[key] = undefined;
+        _richProps ??= {};
+        if (!_richProps.hasOwnProperty(key)) {
+          _richProps[key] = undefined;
         }
       }
     }
   }
 
-  return [_nextProps ?? EMPTY_OBJ, _nextCustomElementProps ?? EMPTY_OBJ];
+  return [_nextProps ?? EMPTY_OBJ, _richProps ?? EMPTY_OBJ];
 }

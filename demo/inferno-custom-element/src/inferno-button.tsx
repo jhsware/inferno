@@ -43,15 +43,14 @@ global.customElements.define(
     }
 
     attributeChangedCallback(attrName: TAttributes, oldVal: string | null | undefined, newVal: string | null | undefined) {
+      console.log(attrName, oldVal, newVal)
       if (oldVal === newVal) return;
       switch (attrName) {
-        case "disabled": {
+        case "disabled":
           this._state[attrName] = newVal !== "false" && newVal != undefined;
           break;
-        }
-        default: {
-          return;
-        }
+        default:
+          // this._state[attrName] = newVal;
       }
 
       scheduleRender(this);

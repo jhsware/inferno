@@ -142,7 +142,7 @@ export class App2 extends Component<any, { list: any[] }> {
             animation="ListItem"
             onComponentDidAppear={componentDidAppear}
             onComponentWillDisappear={componentWillDisappear}>
-            <inferno-list-item class="ListItemElement" index={v.id} onRemove={linkEvent(this, this.doRemove)}><span>index {v.text}</span></inferno-list-item>
+            <inferno-list-item className="ListItemElement" index={v.id} onRemove={linkEvent(this, this.doRemove)}><span>index {v.text}</span></inferno-list-item>
           </AnimWrapper>;
         })}</inferno-list>
       </BlockAnimOnFirstAppear>
