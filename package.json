@@ -99,7 +99,7 @@
     "@types/jsdom": "^21.1.6",
     "@types/node": "^20.10.8",
     "@typescript-eslint/eslint-plugin": "^6.18.1",
-    "babel-plugin-inferno": "6.7.1",
+    "babel-plugin-inferno": "file:./external/babel-plugin-inferno",
     "cli-table": "^0.3.11",
     "concat-stream-es6": "0.0.1",
     "coveralls-next": "^4.2.0",
