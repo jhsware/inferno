@@ -6,7 +6,6 @@ export * from './nodejsHelper';
 export * from './registry';
 export * from './utils';
 
-
 export class CustomElementWrapper extends Component {
   _elType /* CustomElement */: CustomElementConstructor | undefined;
   _$EL: string;
