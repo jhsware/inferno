@@ -1,0 +1,59 @@
+{
+  "name": "inferno-custom-elements",
+  "version": "8.2.2",
+  "license": "MIT",
+  "description": "Add proper support for autonomous custom elements in Inferno",
+  "author": {
+    "name": "Sebastian Ware",
+    "email": "sebastian@urbantalk.se",
+    "url": "https://github.com/jhsware"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/infernojs/inferno.git",
+    "directory": "packages/inferno-custom-elements"
+  },
+  "bugs": {
+    "url": "https://github.com/infernojs/inferno/issues"
+  },
+  "homepage": "https://github.com/infernojs/inferno#readme",
+  "files": [
+    "index.js",
+    "dist/",
+    "README.md",
+    "package.json"
+  ],
+  "main": "index.js",
+  "module": "dist/index.mjs",
+  "dev:module": "dist/index.dev.mjs",
+  "typings": "dist/index.d.ts",
+  "keywords": [
+    "babel",
+    "react",
+    "inferno",
+    "framework",
+    "interfaces",
+    "user interfaces",
+    "vdom",
+    "css"
+  ],
+  "dependencies": {
+    "inferno": "8.2.2"
+  },
+  "devDependencies": {
+    "inferno-create-element": "8.2.2",
+    "inferno-shared": "8.2.2",
+    "inferno-utils": "8.2.2",
+    "inferno-vnode-flags": "8.2.2"
+  },
+  "rollup": {
+    "bundledDependencies": [
+      "inferno-shared",
+      "inferno-vnode-flags"
+    ],
+    "moduleName": "Inferno.CustomElements",
+    "moduleGlobals": {
+      "inferno": "Inferno"
+    }
+  }
+}

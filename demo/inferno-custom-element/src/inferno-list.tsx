@@ -1,0 +1,124 @@
+import { setData, scheduleRender, renderComponent } from 'inferno-custom-elements';
+
+declare global {
+
+  namespace JSX {
+    interface IntrinsicElements {
+      'inferno-list': any;
+      'inferno-list-item': any;
+    }
+  }
+}
+
+global ??= globalThis;
+const { linkEvent } = global.__infernojs__.import('inferno@8');
+
+const cssList = `
+ul {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  background-color: #eee;
+  list-style: none;
+  margin: 0;
+  padding: 0.5rem;
+  overflow: hidden;
+}
+`
+
+global.customElements.define(
+  "inferno-list",
+  class extends HTMLElement {
+    connectedCallback() {
+      this.attachShadow({ mode: "open" });
+      renderComponent(this.render(), this.shadowRoot);
+    }
+
+    adoptedCallback() {
+      console.log("moved to a new document");
+    }
+
+    disconnectedCallback() {
+      renderComponent(null, this.shadowRoot);
+    }
+
+    render() {
+      return (
+        <ul>
+          <style>{cssList}</style>
+          <slot />
+        </ul>
+      )
+    }
+  }
+);
+
+const cssListItem = `
+  li {
+    background-color: #fff;
+    padding: 1rem 0.5rem;
+  }
+`
+
+type TState = {
+  index?: number;
+}
+const ATTRIBUTES = ["index"] as const;
+type TAttributes = typeof ATTRIBUTES[number];
+// type TValues =  TState[typeof ATTRIBUTES[number]];
+
+global.customElements.define(
+  "inferno-list-item",
+  class extends HTMLElement {
+    static observedAttributes = ATTRIBUTES;
+    _state: TState = {};
+
+    constructor() {
+      super();
+      this._state = {};
+    }
+
+    attributeChangedCallback(attrName: TAttributes, oldVal: string | null | undefined, newVal: string | null | undefined) {
+      if (oldVal === newVal) return;
+      switch (attrName) {
+        case "index":
+          this._state[attrName] = newVal != undefined ? parseInt(newVal) : undefined;
+          break;
+      }
+      scheduleRender(this);
+    }
+
+    connectedCallback() {
+      this.attachShadow({ mode: "open" });
+      renderComponent(this.render(), this.shadowRoot);
+    }
+
+    adoptedCallback() {
+      console.log("moved to a new document");
+    }
+
+    disconnectedCallback() {
+      renderComponent(null, this.shadowRoot);
+    }
+
+    didClick(root, e: MouseEvent) {
+      console.log("Clicked -- " + root._state.index);
+      e.stopPropagation();
+      root.dispatchEvent(new Event("remove", e));
+    }
+
+    render() {
+      return (
+        <LI onClick={linkEvent(this, this.didClick)}>
+          <style>{cssListItem}</style>
+          This is:{" "}
+          <slot />
+        </LI>
+      )
+    }
+  }
+);
+
+function LI({ children, ...props }) {
+  return <li {...props}>{children}</li>;
+}
